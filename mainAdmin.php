@@ -56,7 +56,8 @@ if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'admin') {
         echo '<p>No hay soportes disponibles.</p>';
     }
     ?>
-    <a href="logout.php" class="btn btn-danger mt-3">Cerrar sesión</a>
+    <a href="formCreateCliente.php" class="btn btn-outline-primary mt-3">Añadir cliente</a>
+    <a href="logout.php" class="btn btn-outline-danger mt-3">Cerrar sesión</a>
 </div>
 </body>
 </html>
