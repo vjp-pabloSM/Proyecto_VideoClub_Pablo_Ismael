@@ -4,15 +4,15 @@ use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Cliente;
 
 session_start();
 
-// Verificar que hay un cliente logueado
+// Verifica que hay un cliente logueado
 if (!isset($_SESSION['cliente_actual'])) {
     header("Location: index.php");
     exit();
 }
 
 $cliente = $_SESSION['cliente_actual'];
-?>
 
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,28 +20,43 @@ $cliente = $_SESSION['cliente_actual'];
     <title>Panel Cliente - Videoclub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body style="background-color:#282828; color:white;">
-<div class="container my-5">
+<style>
+    .shadow-custom {
+        box-shadow: 0px 0px 20px rgba(0, 0, 255, 0.15);
+    }
+</style>
+<body class="bg-dark text-white">
 
-    <h2>Bienvenido, <?= htmlspecialchars($cliente->nombre) ?></h2>
-    <a href="logout.php" class="btn btn-danger mb-4">Cerrar sesión</a>
+    <!-- Contenedor principal -->
+    <div class="container my-5 w-50">
+        <h2 class="mb-4 text-center">Bienvenido, <?= htmlspecialchars($cliente->nombre) ?></h2>
 
-    <h4>Listado de alquileres</h4>
-    <ul class="list-group">
-        <?php
-        $alquileres = $cliente->getAlquileres();
-        if (!empty($alquileres)) {
-            foreach ($alquileres as $soporte) {
-                echo '<li class="list-group-item bg-dark text-white">';
-                $soporte->muestraResumen();
-                echo '</li>';
+        <!-- Listado de alquileres del cliente -->
+        <h4>Listado de alquileres</h4>
+        <ul class="list-group mb-4 shadow-custom">
+            <?php
+            // Obtener los alquileres del cliente
+            $alquileres = $cliente->getAlquileres();
+
+            if (!empty($alquileres)) {
+
+                // Mostra soportes para alquilar en una lista
+                foreach ($alquileres as $soporte) {
+                    echo '<li class="list-group-item bg-dark text-white">';
+                    $soporte->muestraResumen();
+                    echo '</li>';
+                }
+            } else {
+                echo '<li class="list-group-item bg-dark text-white">No hay alquileres actualmente.</li>';
             }
-        } else {
-            echo '<li class="list-group-item bg-dark text-white">No hay alquileres actualmente.</li>';
-        }
-        ?>
-    </ul>
+            ?>
+        </ul>
 
-</div>
+        <!-- Botones -->
+        <div class="d-flex w-50">
+            <a href="formUpdateCliente.php" class="btn btn-outline-success w-50 me-2">Editar mis datos</a>
+            <a href="logout.php" class="btn btn-outline-danger w-50">Cerrar sesión</a>
+        </div>
+    </div>
 </body>
 </html>
