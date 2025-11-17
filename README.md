@@ -2,35 +2,40 @@
 
 Proyecto educativo basado en un videoclub. Este proyecto ha contado con el apoyo de inteligencia artificial (IA) para generar explicaciones, resolver dudas técnicas y redactar este README.
 
-##📖 Descripción general
+## 📖 Descripción general
 
 Este proyecto simula el funcionamiento de un videoclub, permitiendo gestionar soportes audiovisuales (como cintas de vídeo, DVDs y videojuegos), clientes y alquileres.
 
-El proyecto se desarrolla de manera incremental, aplicando conceptos de Programación Orientada a Objetos (POO) en PHP, uso de herencia, interfaces, excepciones personalizadas, namespaces, autoloading y control de versiones con Git y GitHub.# Proyecto-VideoClub-Pablo-Ismael
+El proyecto se desarrolla de manera incremental, aplicando conceptos de Programación Orientada a Objetos (POO) en PHP, uso de herencia, interfaces, excepciones personalizadas, namespaces, autoloading y control de versiones con Git y GitHub.
 
-##⚙️ Instalación y configuración
-1. Clonar el repositorio
+Proyecto-VideoClub-Pablo-Ismael
+## ⚙️ Instalación y configuración
+### 1. Clonar el repositorio
+
 git clone https://github.com/vjp-pabloSM/Proyecto_VideoClub_Pablo_Ismael.git
+
 cd proyecto-videoclub
 
-1. Inicializar el repositorio en local
+### 2. Inicializar el repositorio en local
+
 git init
 git add .
 git commit -m "Inicializando proyecto Videoclub"
 
-1. Conectar con GitHub
+### 3. Conectar con GitHub
+
 git remote add origin https://github.com/vjp-pabloSM/Proyecto_VideoClub_Pablo_Ismael.git
+
 git push -u origin main
 
-##🧩 Desarrollo incremental
+## 🧩 Desarrollo incremental
 
-El proyecto se divide en fases de implementación, cada una añadiendo nuevas funcionalidades al sistema.
+El proyecto se divide en fases de implementación, cada una añadiendo nuevas funcionalidades.
 
-###1️⃣ Creación de la clase base Soporte
+### 1️⃣ Creación de la clase base Soporte
 
-Contiene los datos básicos de un soporte (título, número y precio).
-
-Define una constante estática IVA = 21%.
+Contiene los datos básicos de un soporte: título, número y precio.
+Incluye una constante estática IVA = 21%.
 
 Métodos:
 
@@ -40,23 +45,20 @@ getPrecioConIVA()
 
 muestraResumen()
 
-Archivo: app/Soporte.php
-Archivo de prueba: test/inicio.php
+Archivos:
+app/Soporte.php
+test/inicio.php
 
-###2️⃣ Herencia: Soportes específicos
+### 2️⃣ Herencia: Soportes específicos
+Clase	Atributos adicionales	Métodos
+CintaVideo	duracion	muestraResumen()
+Dvd	idiomas, formatoPantalla	muestraResumen()
+Juego	consola, minNumJugadores, maxNumJugadores	muestraJugadoresPosibles(), muestraResumen()
+### 3️⃣ Clase Cliente
 
-Se crean las siguientes clases que heredan de Soporte:
+Gestiona clientes y sus alquileres.
 
-Clase Atributos adicionales Métodos
-CintaVideo duracion muestraResumen()
-Dvd idiomas, formatoPantalla muestraResumen()
-Juego consola, minNumJugadores, maxNumJugadores muestraJugadoresPosibles(), muestraResumen()
-
-###3️⃣ Clase Cliente
-
-Gestiona la información y los alquileres de un cliente.
-
-Principales métodos:
+Métodos principales:
 
 tieneAlquilado(Soporte $s)
 
@@ -66,17 +68,17 @@ devolver(int $numSoporte)
 
 listarAlquileres()
 
-Archivo de prueba: test/inicio2.php
+Archivo: test/inicio2.php
 
-###4️⃣ Clase Videoclub
+### 4️⃣ Clase Videoclub
 
-Administra los soportes y los socios.
+Administra soportes y clientes.
 
-Atributos principales:
+Atributos:
 
-productos: array de soportes disponibles
+productos (array)
 
-socios: array de clientes
+socios (array)
 
 Métodos:
 
@@ -92,40 +94,34 @@ alquilaSocioProducto()
 
 devolverSocioProducto()
 
-Archivo de prueba: test/inicio3.php
+Archivo: test/inicio3.php
 
-###5️⃣ Mejoras con abstracción e interfaces
+### 5️⃣ Mejoras con abstracción e interfaces
 
-Se convierte Soporte en una clase abstracta.
+Soporte se convierte en clase abstracta.
 
-Se crea la interfaz Resumible con el método obligatorio muestraResumen().
+Se crea la interfaz Resumible, obligando a implementar muestraResumen().
 
-###6️⃣ Versionado con etiquetas
+### 6️⃣ Versionado con etiquetas
+Versión	Descripción
+v0.329	Versión inicial funcional
+v0.331	Namespaces y autoload
+v0.337	Excepciones y mejoras
+### 7️⃣ Namespaces y autoload
 
-Para seguir el desarrollo incremental, se crean las siguientes etiquetas:
-
-Versión Descripción
-v0.329 Versión inicial funcional del videoclub
-v0.331 Incorporación de namespaces y autoload
-v0.337 Incorporación de excepciones y mejoras en gestión de alquileres
-
-###7️⃣ Namespaces y autoload
-
-Todas las clases se agrupan bajo el espacio de nombres:
-
+Todas las clases usan:
 namespace PROYECTO_VIDEOCLUB_PABLO_ISMAEL;
 
-Se utiliza un archivo autoload.php para registrar automáticamente las clases mediante spl_autoload_register.
+Se usa spl_autoload_register.
 
-Ejemplo de uso en los tests:
-
+Ejemplo:
 use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Videoclub;
 use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Cliente;
 use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Dvd;
 
-###8️⃣ Excepciones personalizadas
+### 8️⃣ Excepciones personalizadas
 
-En el namespace PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util, se crean excepciones para manejar errores de negocio:
+En PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util:
 
 VideoclubException
 
@@ -137,17 +133,13 @@ SoporteNoEncontradoException
 
 ClienteNoEncontradoException
 
-##🧪 Ejecución de pruebas
-
-Ejecuta los scripts de prueba desde el navegador o la línea de comandos:
+## 🧪 Ejecución de pruebas
 
 php test/inicio.php
 php test/inicio2.php
 php test/inicio3.php
 
-Cada uno mostrará la evolución del proyecto y los resultados esperados de las operaciones.
-
-##🧠 Conceptos aplicados
+## 🧠 Conceptos aplicados
 
 Programación orientada a objetos
 
@@ -159,18 +151,120 @@ Namespaces
 
 Encadenamiento de métodos
 
-Manejo de excepciones personalizadas
+Excepciones personalizadas
 
-Gestión de dependencias y autoloading
+Autoloading
 
-Control de versiones con Git (tags y commits incrementales)
+Versionado con Git
 
-##👥 Autores
+# 🚀 Proyecto Videoclub 3.0
 
-Ismael Gil Jiménez y Pablo Serrano Martin
+Nueva fase del proyecto donde se añade un sistema de autenticación, gestión de sesión y paneles diferenciados para administrador y clientes.
 
-##🪪 Licencia
+## 🔐 1. Sistema de login
 
-Este proyecto se distribuye con fines educativos.
-No está destinado a uso comercial.
+index.php contiene un formulario con login/password.
+Los datos se comprueban en login.php.
+
+Usuarios válidos:
+
+admin / admin
+
+usuario / usuario
+
+✔️ Si el usuario es correcto:
+
+En main.php:
+
+Saludo con su nombre
+
+Enlace “Cerrar sesión”
+
+❌ Si el usuario es incorrecto:
+
+Recargar el formulario
+
+Mostrar aviso de error
+
+## 🛠️ 2. Carga de datos del videoclub (solo administrador)
+
+Si el usuario es admin, se carga en $_SESSION:
+
+Array de soportes
+
+Array de clientes
+
+(Copiados directamente, no mediante include)
+
+## 🖥️ 3. Panel de administración: mainAdmin.php
+
+Debe mostrar:
+
+Mensaje de bienvenida
+
+Listado de clientes
+
+Listado de soportes
+
+## 👤 4. Cambios en la clase Cliente
+
+Se añaden atributos:
+
+user
+
+password
+
+Nuevo método:
+
+getAlquileres(): array
+
+## 👥 5. Panel de cliente: mainCliente.php
+
+Si el login corresponde a un cliente:
+
+Mostrar sus alquileres mediante getAlquileres()
+
+## ➕ 6. Alta de clientes
+
+Formulario: formCreateCliente.php
+Procesamiento: createCliente.php
+
+Inserta el nuevo cliente en sesión
+
+Regresa a mainAdmin.php
+
+Si hay errores → vuelve al formulario
+
+## ✏️ 7. Modificación de clientes
+
+Formulario: formUpdateCliente.php
+Procesamiento: updateCliente.php
+
+Se puede modificar:
+
+Desde la página del cliente
+
+Desde el panel de administración
+
+## 🗑️ 8. Eliminación de clientes
+
+En el panel de administración:
+
+Botón de borrar
+
+Confirmación mediante JavaScript
+
+Servidor: removeCliente.php
+
+Elimina el cliente de la sesión
+
+Regresa al listado de clientes
+
+### 👥 Autores
+
+Ismael Gil Jiménez y Pablo Serrano Martín
+
+### 🪪 Licencia
+
+Proyecto educativo sin fines comerciales.
 README generado con ayuda de inteligencia artificial (IA).
