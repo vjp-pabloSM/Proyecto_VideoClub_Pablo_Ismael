@@ -17,5 +17,10 @@
     "minimum-stability": "stable",
     "require": {
         "monolog/monolog": "^3.10"
+    },
+    "config": {
+        "audit": {
+            "block-insecure": false
+        }
     }
 }

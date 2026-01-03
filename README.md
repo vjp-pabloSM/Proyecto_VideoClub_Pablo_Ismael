@@ -322,6 +322,140 @@ Se crean las siguientes etiquetas en GitHub:
 - **v0.511**: integración de Monolog en Cliente y Videoclub
 - **v0.515**: refactorización con LogFactory y LoggerInterface
 
+# 📚 Proyecto Videoclub IV (Documentación y Web Scraping)
+
+En esta fase final del proyecto se incorporan la documentación automática del código y la obtención de información externa mediante Web Scraping, consolidando un proyecto completo y profesional.
+
+---
+
+## 🧾 1️⃣ Documentación con phpDocumentor (Ejercicio 522)
+
+Se documenta el proyecto utilizando **phpDocumentor**, generando documentación automática a partir de comentarios **PHPDoc** incluidos en el código fuente.
+
+### 📌 Proceso seguido
+
+Se añaden comentarios PHPDoc a las siguientes clases:
+
+- **Soporte** (clase abstracta)
+- **Dvd**
+- **CintaVideo**
+- **Juego**
+- **Cliente**
+- **Videoclub**
+
+Se documentan los siguientes elementos:
+
+- Clases
+- Propiedades
+- Constructores
+- Métodos públicos y abstractos
+
+### 📂 Generación de la documentación
+
+La documentación se genera en formato **HTML** dentro de la carpeta:
+
+```
+/docs
+```
+
+Para evitar conflictos de dependencias con Composer, se utiliza **Docker** para ejecutar phpDocumentor:
+
+```bash
+docker run --rm -v ${PWD}:/data phpdoc/phpdoc:3 -d /data/app -t /data/docs
+```
+
+El resultado final es accesible desde el archivo:
+
+```
+docs/index.html
+```
+
+---
+
+## 🌐 2️⃣ Web Scraping con Metacritic (Ejercicios 532 y 533)
+
+### 📌 Propiedad `metacritic` en Soporte
+
+Se añade a la clase abstracta **Soporte** una nueva propiedad para almacenar la URL de Metacritic asociada a cada soporte:
+
+```php
+protected string $metacritic;
+```
+
+Esta propiedad permite vincular cada soporte con su página correspondiente en Metacritic.
+
+---
+
+### 📌 Cambios en la clase Videoclub
+
+Los métodos:
+
+- `incluirCintaVideo()`
+- `incluirDvd()`
+- `incluirJuego()`
+
+se modifican para recibir **como primer parámetro** la URL de Metacritic del soporte.
+
+Ejemplo:
+
+```php
+$vc->incluirDvd(
+    "https://www.metacritic.com/movie/interstellar",
+    "Interstellar",
+    4.5,
+    "es,en,fr",
+    "16:9"
+);
+```
+
+---
+
+### 📌 Método abstracto `getPuntuacion()`
+
+En la clase **Soporte** se añade el método abstracto:
+
+```php
+abstract public function getPuntuacion(): ?int;
+```
+
+Las clases hijas implementan este método realizando Web Scraping sobre la página de Metacritic del soporte.
+
+El scraping se realiza mediante:
+
+- `file_get_contents()`
+- Expresiones regulares (`preg_match`)
+- Simulación de navegador mediante cabecera `User-Agent`
+
+---
+
+### 📌 Visualización de puntuaciones
+
+En el fichero **inicio3.php**:
+
+- Se obtienen los alquileres de un cliente usando:
+  ```php
+  getAlquileres(): array
+  ```
+- Para cada soporte alquilado:
+  - Se muestra el título
+  - Se muestra su puntuación Metacritic, si está disponible
+
+Ejemplo de salida:
+
+```
+The Last of Us Part II
+Puntuación Metacritic: 93
+
+Interstellar
+Puntuación Metacritic: 74
+```
+
+## 🏷️ Versionado
+
+Se crean las siguientes etiquetas en GitHub:
+- **v0.533**: documentación del proyecto con phpDocumentor y Web Scraping con Metacritic (URL por soporte y obtención de puntuaciones en los alquileres)
+
+
 ### 👥 Autores
 
 Ismael Gil Jiménez y Pablo Serrano Martín
