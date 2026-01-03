@@ -1,56 +1,69 @@
 <?php
-require_once __DIR__ . "/app/Cliente.php";
-use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Cliente;
-
+require __DIR__ . '/vendor/autoload.php';
 session_start();
 
-// Recoge el ID del cliente desde el formulario (POST), si no viene, será null
-$id = $_POST['id'] ?? null;
+// Recoger ID del cliente
+$id = isset($_POST['id']) ? (int) $_POST['id'] : null;
 
-// Recoge y limpia los campos del formulario usando trim() para eliminar espacios al inicio y final
-$nombre = trim($_POST['nombre'] ?? '');
-$user = trim($_POST['user'] ?? '');
+// Recoger y limpiar campos
+$nombre   = trim($_POST['nombre'] ?? '');
+$user     = trim($_POST['user'] ?? '');
 $password = trim($_POST['password'] ?? '');
 
-// Si no se pasó id, usamos el del cliente logueado
-if ($id === null && isset($_SESSION['cliente_actual'])) {
-    $id = $_SESSION['cliente_actual']->getNumero();
-}
-
-// Validaciones
-if ($nombre === '' || $user === '' || $password === '') {
+// Validación básica
+if ($id === null || $nombre === '' || $user === '' || $password === '') {
     $_SESSION['error'] = "Todos los campos son obligatorios.";
-    header("Location: formUpdateCliente.php?id=$id");
+    header("Location: formUpdateCliente.php?id={$id}");
     exit();
 }
 
-// Evita duplicados
+// Asegurar que hay clientes
+if (empty($_SESSION['clientes'])) {
+    $_SESSION['error'] = "No hay clientes disponibles.";
+    header("Location: mainAdmin.php");
+    exit();
+}
+
+// Evitar duplicados de usuario
 foreach ($_SESSION['clientes'] as $c) {
-    if (!$c instanceof Cliente) continue;
-    if ($c->getNumero() != $id && ($c->nombre === $nombre || $c->getUser() === $user)) {
-        $_SESSION['error'] = "Ya existe un cliente con ese nombre o usuario.";
-        header("Location: formUpdateCliente.php?id=$id");
+    if ($c['numero'] != $id && $c['user'] === $user) {
+        $_SESSION['error'] = "Ya existe un cliente con ese nombre de usuario.";
+        header("Location: formUpdateCliente.php?id={$id}");
         exit();
     }
 }
 
-// Actualiza cliente
-foreach ($_SESSION['clientes'] as $c) {
-    if ($c instanceof Cliente && $c->getNumero() == $id) {
-        $c->nombre = $nombre;
-        $c->setUser($user);
-        $c->setPassword($password);
+// Actualizar cliente
+$clienteActualizado = false;
+
+foreach ($_SESSION['clientes'] as &$c) {
+    if ($c['numero'] == $id) {
+        $c['nombre']   = $nombre;
+        $c['user']     = $user;
+        $c['password'] = $password;
+        $clienteActualizado = true;
         break;
     }
 }
+unset($c);
 
-// Actualiza cliente de sesión si corresponde
-if (isset($_SESSION['cliente_actual']) && $_SESSION['cliente_actual']->getNumero() == $id) {
-    $_SESSION['cliente_actual']->nombre = $nombre;
-    $_SESSION['cliente_actual']->setUser($user);
-    $_SESSION['cliente_actual']->setPassword($password);
+// Actualizar cliente logueado si corresponde
+if (
+    isset($_SESSION['cliente_actual']) &&
+    $_SESSION['cliente_actual']['numero'] == $id
+) {
+    $_SESSION['cliente_actual']['nombre']   = $nombre;
+    $_SESSION['cliente_actual']['user']     = $user;
+    $_SESSION['cliente_actual']['password'] = $password;
 }
 
-// Redirige según tipo de usuario
+// Mensaje de confirmación
+if ($clienteActualizado) {
+    $_SESSION['mensaje'] = "Datos del cliente actualizados correctamente.";
+} else {
+    $_SESSION['error'] = "Cliente no encontrado.";
+}
+
+// Redirigir según tipo de usuario
 header("Location: " . ($_SESSION['user'] === 'admin' ? 'mainAdmin.php' : 'mainCliente.php'));
 exit();

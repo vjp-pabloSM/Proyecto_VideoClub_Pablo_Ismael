@@ -1,9 +1,12 @@
 <?php
-namespace PROYECTO_VIDEOCLUB_PABLO_ISMAEL;
+namespace Dwes\ProyectoVideoclub;
 
-use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util\SoporteYaAlquiladoException;
-use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util\CupoSuperadoException;
-use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util\SoporteNoEncontradoException;
+use Psr\Log\LoggerInterface;
+use Dwes\ProyectoVideoclub\Util\LogFactory;
+
+use Dwes\ProyectoVideoclub\Util\SoporteYaAlquiladoException;
+use Dwes\ProyectoVideoclub\Util\CupoSuperadoException;
+use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
 
 // Clase Cliente
 class Cliente {
@@ -15,16 +18,20 @@ class Cliente {
     private $numSoportesAlquilados = 0;      
     private $maxAlquilerConcurrente;        
     private $user = "";                    
-    private $password = "";                   
+    private $password = "";
+
+    // Atributo para los logs
+    private LoggerInterface $log;
 
     // Constructor para inicializar un cliente
-    public function __construct($nombre, $numero, $user, $password, $maxAlquilerConcurrente = 3) {
+    public function __construct($nombre, $numero, $user = '', $password = '', $maxAlquilerConcurrente = 3) {
         $this->nombre = $nombre;
         $this->numero = $numero;
         $this->user = $user;
         $this->password = $password;
         $this->maxAlquilerConcurrente = $maxAlquilerConcurrente;
         $this->soportesAlquilados = []; // Inicializa array vacío de alquileres
+        $this->log = LogFactory::createLogger();
     }
     
     // Getters y setters 
@@ -55,11 +62,34 @@ class Cliente {
     // Alquila un soporte, lanzando excepciones si hay problemas
     public function alquilar(Soporte $s) {
         if ($this->tieneAlquilado($s)) {
+
+            // Log warning antes de lanzar la excepción
+            $this->log->warning(
+                'Intento de alquilar soporte ya alquilado',
+                [
+                    'cliente' => $this->nombre,
+                    'numeroCliente' => $this->numero,
+                    'soporte' => $s->getNumero()
+                ]
+            );
+
             throw new SoporteYaAlquiladoException(
                 "El cliente {$this->nombre} (nº {$this->numero}) ya tiene alquilado el soporte nº {$s->getNumero()}."
             );
         }
+
         if (count($this->soportesAlquilados) >= $this->maxAlquilerConcurrente) {
+
+            // Log warning antes de lanzar la excepción
+            $this->log->warning(
+                'Cupo de alquiler superado',
+                [
+                    'cliente' => $this->nombre,
+                    'numeroCliente' => $this->numero,
+                    'maxAlquileres' => $this->maxAlquilerConcurrente
+                ]
+            );
+
             throw new CupoSuperadoException(
                 "El cliente {$this->nombre} (nº {$this->numero}) ha alcanzado el máximo de alquileres ({$this->maxAlquilerConcurrente})."
             );
@@ -70,8 +100,17 @@ class Cliente {
         $this->numSoportesAlquilados++;
         $s->alquilado = true;
 
+        // Log info del alquiler realizado
+        $this->log->info(
+            'Soporte alquilado correctamente',
+            [
+                'cliente' => $this->nombre,
+                'numeroCliente' => $this->numero,
+                'soporte' => $s->getNumero()
+            ]
+        );
+
         // Mostrar resumen del alquiler
-        echo "<p>El cliente {$this->nombre} ha alquilado este soporte: </p>";
         $s->muestraResumen();
         return $this;
     }
@@ -83,10 +122,29 @@ class Cliente {
                 unset($this->soportesAlquilados[$indice]);
                 $this->soportesAlquilados = array_values($this->soportesAlquilados); 
                 $soporte->alquilado = false;
-                echo "<p>El cliente {$this->nombre} ha devuelto el soporte nº {$numSoporte}.</p>";
+                // Log info de la devolución
+                $this->log->info(
+                    'Soporte devuelto',
+                    [
+                        'cliente' => $this->nombre,
+                        'numeroCliente' => $this->numero,
+                        'soporte' => $numSoporte
+                    ]
+                );
                 return $this;
             }
         }
+
+        // Log warning antes de lanzar la excepción
+        $this->log->warning(
+            'Intento de devolver soporte no alquilado',
+            [
+                'cliente' => $this->nombre,
+                'numeroCliente' => $this->numero,
+                'soporte' => $numSoporte
+            ]
+        );
+
         throw new SoporteNoEncontradoException(
             "El cliente {$this->nombre} (nº {$this->numero}) no tenía alquilado el soporte nº {$numSoporte}."
         );

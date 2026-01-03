@@ -157,6 +157,12 @@ Autoloading
 
 Versionado con Git
 
+Logging con Monolog
+
+Composer y gestión de dependencias
+
+PSR-3 (LoggerInterface)
+
 # 🚀 Proyecto Videoclub 3.0
 
 Nueva fase del proyecto donde se añade un sistema de autenticación, gestión de sesión y paneles diferenciados para administrador y clientes.
@@ -259,6 +265,62 @@ Servidor: removeCliente.php
 Elimina el cliente de la sesión
 
 Regresa al listado de clientes
+
+# 🧾 Proyecto Videoclub IV (Composer y Logging)
+
+En esta fase del proyecto se profesionaliza la aplicación incorporando herramientas estándar del ecosistema PHP como Composer, Monolog y PSR-3, mejorando la mantenibilidad y la trazabilidad del sistema.
+
+## 📦 Uso de Composer
+
+Se inicializa Composer en el proyecto para gestionar dependencias externas y el autoload de clases.
+
+Dependencias añadidas:
+- **monolog/monolog**: sistema de logging
+- **phpunit/phpunit** (en require-dev): preparado para futuras pruebas unitarias
+
+El autoload se configura mediante **PSR-4**, eliminando por completo los `include` y `include_once` manuales.
+
+## 🪵 Sistema de logging con Monolog
+
+Se integra Monolog para registrar eventos relevantes del sistema en el archivo: logs/videoclub.log
+
+Características del logging:
+- Canal único: `VideoclubLogger`
+- Nivel: `DEBUG`
+- Registro de mensajes `INFO` y `WARNING`
+- Uso de contexto (segundo parámetro) siguiendo el estándar **PSR-3**
+
+### 📌 Logging en Cliente
+
+La clase `Cliente` incorpora un logger que:
+- Registra con nivel **INFO** los alquileres y devoluciones correctas
+- Registra con nivel **WARNING** los errores antes de lanzar excepciones
+- Sustituye los `echo` informativos por llamadas al log
+- Mantiene `muestraResumen()` usando `echo`, según el enunciado
+
+### 📌 Logging en Videoclub
+
+La clase `Videoclub` también incorpora logging para:
+- Altas de socios y productos
+- Alquileres y devoluciones individuales y múltiples
+- Errores de negocio (cliente o soporte no encontrado, alquiler no permitido, etc.)
+
+## 🏭 Factoría de Logger (LogFactory)
+
+Para evitar duplicación de código, se crea la clase: Dwes\ProyectoVideoclub\Util\LogFactory
+
+Esta factoría:
+- Centraliza la creación y configuración del logger
+- Devuelve un objeto que implementa **LoggerInterface (PSR-3)**
+- Permite desacoplar las clases del uso directo de Monolog
+
+Tanto `Cliente` como `Videoclub` obtienen el logger desde esta factoría, mejorando el diseño y siguiendo buenas prácticas.
+
+## 🏷️ Versionado
+
+Se crean las siguientes etiquetas en GitHub:
+- **v0.511**: integración de Monolog en Cliente y Videoclub
+- **v0.515**: refactorización con LogFactory y LoggerInterface
 
 ### 👥 Autores
 

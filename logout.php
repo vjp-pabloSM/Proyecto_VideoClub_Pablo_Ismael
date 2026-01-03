@@ -1,11 +1,25 @@
 <?php
-// Inicia la sesión
+require __DIR__ . '/vendor/autoload.php';
 session_start();
-
-// Cierra la sesión del usuario destruyendo lo que hayen ella
+$_SESSION = [];
 session_destroy();
 
-// Redirige al usuario a la página de inicio
-header("Location: index.php"); 
+// Eliminar la cookie de sesión
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(
+        session_name(),
+        '',
+        time() - 42000,
+        $params["path"],
+        $params["domain"],
+        $params["secure"],
+        $params["httponly"]
+    );
+}
+
+// Redirigir al login
+header("Location: index.php");
 exit();
+
 ?>

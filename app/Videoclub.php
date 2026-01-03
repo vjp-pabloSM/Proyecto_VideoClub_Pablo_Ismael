@@ -1,7 +1,10 @@
 <?php
-namespace PROYECTO_VIDEOCLUB_PABLO_ISMAEL;
+namespace Dwes\ProyectoVideoclub;
 
-use PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util\VideoclubException;
+use Psr\Log\LoggerInterface;
+use Dwes\ProyectoVideoclub\Util\LogFactory;
+
+use Dwes\ProyectoVideoclub\Util\VideoclubException;
 
 // Clase videoclub que relaciona las clases cliente y soporte
 class Videoclub{
@@ -11,20 +14,30 @@ class Videoclub{
     private $socios = [];
     private $numSocios = 0;
 
-    // Nuevas propiedades para seguimiento de alquileres
+    // Atributos para seguimiento de alquileres
     private $numProductosAlquilados = 0;
     private $numTotalAlquileres = 0;
 
-    // constructor que solo recibe $nombre porque es lo único que se necesita para crear el videoclub
+    // Atributo para los logs
+    private LoggerInterface $log;
+
+    // Constructor que solo recibe $nombre porque es lo único que se necesita para crear el videoclub
     public function __construct($nombre){
         $this->nombre = $nombre;
+        $this->log = LogFactory::createLogger();
     }
 
     // Método que incluye Productos del array de soporte al videoclub
     public function incluirProducto(Soporte $producto){
         $this->productos[] = $producto;
         $this->numProductos++;
-        echo "<p>Producto: ".$producto->muestraResumen()." añadido al videoclub<p>";
+        $this->log->info(
+            'Producto añadido al videoclub',
+            [
+                'producto' => get_class($producto),
+                'numeroProducto' => $producto->getNumero()
+            ]
+        );
     }
     
     // Método que incluye las cintas de video al videoclub
@@ -50,7 +63,13 @@ class Videoclub{
         $cliente = new Cliente($nombre, $this->numSocios+1, $maxAlquilerConcurrente);
         $this->socios[] = $cliente;
         $this->numSocios++;
-        echo "<p>El cliente " . $nombre . " (nº " . $this->numSocios . ") ha sido añadido correctamente</p>";
+        $this->log->info(
+            'Socio añadido al videoclub',
+            [
+                'cliente' => $nombre,
+                'numeroCliente' => $this->numSocios
+            ]
+        );
     }
 
     // Método que muestra los productos en una lista
@@ -95,38 +114,73 @@ class Videoclub{
         $cliente = null;
         $soporte = null;
 
+        // Buscar cliente
         foreach ($this->socios as $s) {
             if ($s->getNumero() == $numeroCliente) {
                 $cliente = $s;
+                break;
             }
         }
 
+        // Buscar soporte
         foreach ($this->productos as $p) {
-            if($p->getNumero() == $numeroSuporte) {
+            if ($p->getNumero() == $numeroSuporte) {
                 $soporte = $p;
+                break;
             }
         }
 
-        if ($cliente && $soporte) {
-            try {
-                $wasAlquilado = $soporte->alquilado ?? false;
-                $cliente->alquilar($soporte);
-                // si antes no estaba alquilado y ahora sí, actualizamos contadores
-                if (!$wasAlquilado && ($soporte->alquilado ?? false)) {
-                    $this->numProductosAlquilados++;
-                }
-                // cada intento de alquiler correcto cuenta como alquiler total
-                $this->numTotalAlquileres++;
-            } catch (VideoclubException $e) {
-                // Informar al usuario del motivo (todas las excepciones de cliente heredan de VideoclubException)
-                echo "<p>No se pudo realizar el alquiler: " . $e->getMessage() . "</p>";
+        // Cliente o soporte no encontrados
+        if (!$cliente || !$soporte) {
+            $this->log->warning(
+                'Cliente o soporte no encontrado para alquiler',
+                [
+                    'cliente' => $numeroCliente,
+                    'producto' => $numeroSuporte
+                ]
+            );
+
+            return $this;
+        }
+
+        try {
+            $soporteEstabaLibre = $soporte->alquilado ?? false;
+
+            // Intentar alquilar (puede lanzar excepciones)
+            $cliente->alquilar($soporte);
+
+            // Actualizar contadores
+            if (!$soporteEstabaLibre && ($soporte->alquilado ?? false)) {
+                $this->numProductosAlquilados++;
             }
-        } else {
-            echo "<p>No se puede realizar el alquiler, cliente o soporte no encontrados</p>";
+
+            $this->numTotalAlquileres++;
+
+            // Log INFO si todo va bien
+            $this->log->info(
+                'Alquiler realizado correctamente desde Videoclub',
+                [
+                    'cliente' => $numeroCliente,
+                    'producto' => $numeroSuporte
+                ]
+            );
+
+        } catch (VideoclubException $e) {
+
+            // Log WARNING al capturar la excepción
+            $this->log->warning(
+                'Error al alquilar producto desde Videoclub',
+                [
+                    'cliente' => $numeroCliente,
+                    'producto' => $numeroSuporte,
+                    'error' => $e->getMessage()
+                ]
+            );
         }
 
         return $this; // permite encadenamiento desde Videoclub
     }
+
 
     // Alquila múltiples productos a un socio    
     public function alquilarSocioProductos(int $numSocio, array $numerosProductos) {
@@ -142,30 +196,45 @@ class Videoclub{
         }
 
         if (!$cliente) {
-            echo "<p>Socio nº {$numSocio} no encontrado.</p>";
+            $this->log->warning(
+                'Socio no encontrado para alquiler múltiple',
+                ['cliente' => $numSocio]
+            );
             return $this;
         }
 
         // Comprobar disponibilidad de todos los soportes
         foreach ($numerosProductos as $numProducto) {
             $soporte = null;
+
             foreach ($this->productos as $p) {
                 if ($p->getNumero() == $numProducto) {
                     $soporte = $p;
                     break;
                 }
             }
+
             if (!$soporte) {
-                echo "<p>Soporte nº {$numProducto} no encontrado. Ningún producto será alquilado.</p>";
+                $this->log->warning(
+                    'Soporte no encontrado en alquiler múltiple',
+                    ['cliente' => $numSocio, 'producto' => $numProducto]
+                );
                 return $this;
             }
+
             if ($soporte->alquilado) {
-                echo "<p>Soporte nº {$numProducto} ya está alquilado. Ningún producto será alquilado.</p>";
+                $this->log->warning(
+                    'Soporte ya alquilado en alquiler múltiple',
+                    ['cliente' => $numSocio, 'producto' => $numProducto]
+                );
                 return $this;
             }
-            // Verificación extra: el cliente no lo tenga ya alquilado
+
             if ($cliente->tieneAlquilado($soporte)) {
-                echo "<p>El cliente ya tiene alquilado el soporte nº {$numProducto}. Ningún producto será alquilado.</p>";
+                $this->log->warning(
+                    'Cliente ya tenía alquilado el soporte (alquiler múltiple)',
+                    ['cliente' => $numSocio, 'producto' => $numProducto]
+                );
                 return $this;
             }
 
@@ -178,8 +247,21 @@ class Videoclub{
                 $cliente->alquilar($soporte);
                 $this->numProductosAlquilados++;
                 $this->numTotalAlquileres++;
-            } catch (\PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util\VideoclubException $e) {
-                echo "<p>No se pudo alquilar el soporte: " . $e->getMessage() . "</p>";
+
+                $this->log->info(
+                    'Soporte alquilado en alquiler múltiple',
+                    ['cliente' => $numSocio, 'producto' => $soporte->getNumero()]
+                );
+
+            } catch (VideoclubException $e) {
+                $this->log->warning(
+                    'Error al alquilar soporte en alquiler múltiple',
+                    [
+                        'cliente' => $numSocio,
+                        'producto' => $soporte->getNumero(),
+                        'error' => $e->getMessage()
+                    ]
+                );
             }
         }
 
@@ -208,17 +290,34 @@ class Videoclub{
         if ($cliente && $soporte) {
             try {
                 $cliente->devolver($numeroProducto);
-                // Actualizamos contadores si los tienes, por ejemplo:
-                if ($this->numProductosAlquilados > 0) $this->numProductosAlquilados--;
-            } catch (\PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util\VideoclubException $e) {
-                echo "<p>No se pudo devolver el soporte: " . $e->getMessage() . "</p>";
+                if ($this->numProductosAlquilados > 0) {
+                    $this->numProductosAlquilados--;
+                }
+
+                $this->log->info(
+                    'Soporte devuelto desde Videoclub',
+                    ['cliente' => $numSocio, 'producto' => $numeroProducto]
+                );
+
+            } catch (VideoclubException $e) {
+                $this->log->warning(
+                    'Error al devolver soporte desde Videoclub',
+                    [
+                        'cliente' => $numSocio,
+                        'producto' => $numeroProducto,
+                        'error' => $e->getMessage()
+                    ]
+                );
             }
         } else {
-            echo "<p>No se puede devolver, cliente o soporte no encontrados</p>";
+            $this->log->warning(
+                'Cliente o soporte no encontrado al devolver',
+                ['cliente' => $numSocio, 'producto' => $numeroProducto]
+            );
         }
 
-        return $this; // permite encadenamiento
-    }    
+        return $this;
+    }
 
     // Devuelve múltiples productos de un socio
     public function devolverSocioProductos(int $numSocio, array $numerosProductos) {
@@ -234,33 +333,49 @@ class Videoclub{
         }
 
         if (!$cliente) {
-            echo "<p>Cliente no encontrado</p>";
+            $this->log->warning(
+                'Cliente no encontrado en devolución múltiple',
+                ['cliente' => $numSocio]
+            );
             return $this;
         }
 
-        // Verificar que todos los soportes existen y están alquilados por el cliente
+        // Verificar soportes
         foreach ($numerosProductos as $numProd) {
             $soporte = null;
+
             foreach ($this->productos as $p) {
                 if ($p->getNumero() == $numProd) {
                     $soporte = $p;
                     break;
                 }
             }
+
             if (!$soporte || !$cliente->tieneAlquilado($soporte)) {
-                echo "<p>No se puede devolver, alguno de los productos no estaba alquilado por el cliente.</p>";
-                return $this; // aborta sin devolver nada
+                $this->log->warning(
+                    'Error en devolución múltiple: soporte no alquilado',
+                    ['cliente' => $numSocio, 'producto' => $numProd]
+                );
+                return $this;
             }
+
             $soportesParaDevolver[] = $soporte;
         }
 
-        // Devolver todos los soportes
+        // Devolver todos
         foreach ($soportesParaDevolver as $s) {
             $cliente->devolver($s->getNumero());
-            if ($this->numProductosAlquilados > 0) $this->numProductosAlquilados--;
+            if ($this->numProductosAlquilados > 0) {
+                $this->numProductosAlquilados--;
+            }
+
+            $this->log->info(
+                'Soporte devuelto en devolución múltiple',
+                ['cliente' => $numSocio, 'producto' => $s->getNumero()]
+            );
         }
 
-        return $this; // permite encadenamiento
+        return $this;
     }
 
 }

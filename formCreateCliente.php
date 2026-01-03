@@ -1,4 +1,6 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+
 session_start();
 
 // Redirige al index si el usuario no es admin

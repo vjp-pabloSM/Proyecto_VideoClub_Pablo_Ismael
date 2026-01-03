@@ -1,5 +1,5 @@
 <?php
-namespace PROYECTO_VIDEOCLUB_PABLO_ISMAEL\Util;
+namespace Dwes\ProyectoVideoclub\Util;
 
 class VideoclubException extends \Exception {}
 ?>

@@ -1,8 +1,9 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 session_start();
 
-// Obtiene mensaje de error de la sesión si hubiese
-$error = $_SESSION['error'] ?? "";
+// Obtener mensaje de error de la sesión (si existe)
+$error = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
 ?>
 
@@ -13,11 +14,13 @@ unset($_SESSION['error']);
     <title>Login Videoclub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <style>
 .shadow-custom {
     box-shadow: 0px 0px 20px rgba(0, 0, 255, 0.15);
 }
 </style>
+
 <body class="bg-dark text-white">
 
     <!-- Contenedor principal -->
@@ -28,7 +31,9 @@ unset($_SESSION['error']);
 
             <!-- Mostrar mensaje de error -->
             <?php if ($error): ?>
-                <div class="alert alert-danger py-1 text-center"><?= $error ?></div>
+                <div class="alert alert-danger py-1 text-center">
+                    <?= htmlspecialchars($error) ?>
+                </div>
             <?php endif; ?>
 
             <!-- Formulario de login -->
@@ -47,5 +52,6 @@ unset($_SESSION['error']);
             </form>
         </div>
     </div>
+
 </body>
 </html>

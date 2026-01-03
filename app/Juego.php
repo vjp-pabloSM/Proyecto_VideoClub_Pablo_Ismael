@@ -1,5 +1,5 @@
 <?php
-namespace PROYECTO_VIDEOCLUB_PABLO_ISMAEL;
+namespace Dwes\ProyectoVideoclub;
 
 
 // Clase Juego hija de Soporte
@@ -30,7 +30,7 @@ class Juego extends Soporte {
     }
 
     // Método heredado de soporte en la cual es implementado por la interfaz Resumible
-    public function muestraResumen(){
+    public function muestraResumen() : void {
         echo "<strong>Juego para: " . $this->consola . "</strong><br>" ;
         echo $this->titulo . " (Nº " . $this->getNumero() . ")<br>";
         echo $this->getPrecio() . " € (IVA no incluido)<br>";
