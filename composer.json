@@ -1,26 +1,22 @@
 {
-    "name": "dwes/videoclub",
-    "description": "Proyecto Videoclub",
-    "type": "project",
-    "license": "MIT",
+    "name": "mella/proyecto-video-club-pablo-ismael",
     "autoload": {
         "psr-4": {
             "Dwes\\ProyectoVideoclub\\": "app/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Dwes\\ProyectoVideoclub\\Tests\\": "test/"
+        }
+    },
     "authors": [
         {
-            "name": "vjp-ismaelGJ",
-            "email": "igilj04@informatica.iesvalledeljerteplasencia.es"
+            "name": "vjp-pabloSM",
+            "email": "pserranom08@iformatica.iesvalledeljerteplasencia.es"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
         "monolog/monolog": "^3.10"
-    },
-    "config": {
-        "audit": {
-            "block-insecure": false
-        }
     }
 }

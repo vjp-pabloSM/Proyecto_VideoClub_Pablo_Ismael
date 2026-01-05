@@ -1,4 +1,5 @@
 <?php
+
 namespace Dwes\ProyectoVideoclub;
 
 /**
@@ -10,7 +11,8 @@ namespace Dwes\ProyectoVideoclub;
  *
  * @package Dwes\ProyectoVideoclub
  */
-class Juego extends Soporte {
+class Juego extends Soporte
+{
 
     /**
      * Consola para la que está disponible el juego
@@ -44,7 +46,8 @@ class Juego extends Soporte {
      * @param int    $minNumJugadores  Número mínimo de jugadores
      * @param int    $maxNumJugadores  Número máximo de jugadores
      */
-    public function __construct($titulo, $numero, $precio, string $metacritic, $consola, $minNumJugadores, $maxNumJugadores) {
+    public function __construct($titulo, $numero, $precio, string $metacritic, $consola, $minNumJugadores, $maxNumJugadores)
+    {
         parent::__construct($titulo, $numero, $precio, $metacritic);
         $this->consola = $consola;
         $this->minNumJugadores = $minNumJugadores;
@@ -59,7 +62,8 @@ class Juego extends Soporte {
      *
      * @return void
      */
-    public function muestraJugadoresPosibles() {
+    public function muestraJugadoresPosibles()
+    {
         if ($this->minNumJugadores == 1 && $this->maxNumJugadores == 1) {
             echo "Para un jugador<br>";
         } elseif ($this->minNumJugadores == $this->maxNumJugadores) {
@@ -72,9 +76,10 @@ class Juego extends Soporte {
     /**
      * @inheritDoc
      */
-    public function getPuntuacion(): ?int {
+    public function getPuntuacion(): ?int
+    {
         return $this->scrapMetacritic();
-    }    
+    }
 
     /**
      * Muestra un resumen con la información del juego
@@ -84,11 +89,14 @@ class Juego extends Soporte {
      *
      * @return void
      */
-    public function muestraResumen() : void {
-        echo "<strong>Juego para: " . $this->consola . "</strong><br>";
-        echo $this->titulo . " (Nº " . $this->getNumero() . ")<br>";
-        echo $this->getPrecio() . " € (IVA no incluido)<br>";
-        $this->muestraJugadoresPosibles();
+    public function muestraResumen(): string
+    {
+        $jugadores = ($this->minNumJugadores == $this->maxNumJugadores)
+            ? $this->maxNumJugadores . " jugador(es)"
+            : "De {$this->minNumJugadores} a {$this->maxNumJugadores} jugadores";
+
+        $texto = "Juego para {$this->consola}: $this->titulo (Nº {$this->getNumero()}) - {$this->getPrecio()} € - $jugadores";
+        echo $texto;
+        return $texto;
     }
 }
-?>

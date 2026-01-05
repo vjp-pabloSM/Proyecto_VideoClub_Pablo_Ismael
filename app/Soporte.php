@@ -149,5 +149,5 @@ abstract class Soporte implements Resumible {
      *
      * @return void
      */
-    abstract public function muestraResumen(): void;
+    abstract public function muestraResumen(): string;
 }

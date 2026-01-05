@@ -1,4 +1,5 @@
 <?php
+
 namespace Dwes\ProyectoVideoclub;
 
 /**
@@ -10,7 +11,8 @@ namespace Dwes\ProyectoVideoclub;
  *
  * @package Dwes\ProyectoVideoclub
  */
-class Dvd extends Soporte {
+class Dvd extends Soporte
+{
 
     /**
      * Idiomas disponibles en el DVD
@@ -36,7 +38,8 @@ class Dvd extends Soporte {
      * @param string $idiomas         Idiomas disponibles
      * @param string $formatPantalla  Formato de pantalla (4:3, 16:9, etc.)
      */
-    public function __construct($titulo, $numero, $precio, string $metacritic, $idiomas, $formatPantalla) {
+    public function __construct($titulo, $numero, $precio, string $metacritic, $idiomas, $formatPantalla)
+    {
         parent::__construct($titulo, $numero, $precio, $metacritic);
         $this->idiomas = $idiomas;
         $this->formatPantalla = $formatPantalla;
@@ -45,9 +48,10 @@ class Dvd extends Soporte {
     /**
      * @inheritDoc
      */
-    public function getPuntuacion(): ?int {
+    public function getPuntuacion(): ?int
+    {
         return $this->scrapMetacritic();
-    }    
+    }
 
     /**
      * Muestra un resumen con la información del DVD
@@ -57,12 +61,10 @@ class Dvd extends Soporte {
      *
      * @return void
      */
-    public function muestraResumen() : void {
-        echo "<strong>Película en DVD: </strong><br>";
-        echo $this->titulo . " (Nº " . $this->getNumero() . ")<br>";
-        echo $this->getPrecio() . " € (IVA no incluido)<br>";
-        echo "Idiomas: " . $this->idiomas . "<br>";
-        echo "Formato de pantalla: " . $this->formatPantalla . "<br>";
+    public function muestraResumen(): string
+    {
+        $texto = "Película en DVD: $this->titulo (Nº {$this->getNumero()}) - {$this->getPrecio()} € - Idiomas: $this->idiomas - Formato: {$this->formatPantalla}";
+        echo $texto;
+        return $texto;
     }
 }
-?>

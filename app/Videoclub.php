@@ -4,6 +4,8 @@ namespace Dwes\ProyectoVideoclub;
 use Psr\Log\LoggerInterface;
 use Dwes\ProyectoVideoclub\Util\LogFactory;
 use Dwes\ProyectoVideoclub\Util\VideoclubException;
+use Dwes\ProyectoVideoclub\Util\ClienteNoEncontradoException;
+use Dwes\ProyectoVideoclub\Util\SoporteNoEncontradoException;
 
 /**
  * Clase Videoclub
@@ -257,9 +259,12 @@ class Videoclub {
             }
         }
 
-        // Si no existe cliente o soporte, no hacemos nada
-        if (!$cliente || !$soporte) {
-            return $this;
+        // Si no existe cliente o soporte, lanzamos excepción
+        if (!$cliente) {
+            throw new ClienteNoEncontradoException("Cliente con número $numeroCliente no encontrado.");
+        }
+        if (!$soporte) {
+            throw new SoporteNoEncontradoException("Soporte con número $numeroSoporte no encontrado.");
         }
 
         try {
@@ -293,6 +298,22 @@ class Videoclub {
      * @return Videoclub
      */
     public function devolverSocioProducto(int $numSocio, int $numeroProducto) {
+        $cliente = null;
+
+        // Buscar cliente
+        foreach ($this->socios as $s) {
+            if ($s->getNumero() === $numSocio) {
+                $cliente = $s;
+                break;
+            }
+        }
+
+        if (!$cliente) {
+            throw new ClienteNoEncontradoException("Cliente con número $numSocio no encontrado.");
+        }
+
+        $cliente->devolver($numeroProducto);
+
         return $this;
     }
 

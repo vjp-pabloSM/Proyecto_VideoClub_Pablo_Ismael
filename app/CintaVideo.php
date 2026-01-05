@@ -1,4 +1,5 @@
 <?php
+
 namespace Dwes\ProyectoVideoclub;
 
 /**
@@ -10,7 +11,8 @@ namespace Dwes\ProyectoVideoclub;
  *
  * @package Dwes\ProyectoVideoclub
  */
-class CintaVideo extends Soporte {
+class CintaVideo extends Soporte
+{
 
     /**
      * Duración de la cinta en minutos
@@ -28,7 +30,8 @@ class CintaVideo extends Soporte {
      * @param string $metacritic  URL de Metacritic del soporte
      * @param int    $duracion    Duración de la película en minutos
      */
-    public function __construct($titulo, $numero, $precio, string $metacritic, $duracion) {
+    public function __construct($titulo, $numero, $precio, string $metacritic, $duracion)
+    {
         parent::__construct($titulo, $numero, $precio, $metacritic);
         $this->duracion = $duracion;
     }
@@ -36,7 +39,8 @@ class CintaVideo extends Soporte {
     /**
      * @inheritDoc
      */
-    public function getPuntuacion(): ?int {
+    public function getPuntuacion(): ?int
+    {
         return $this->scrapMetacritic();
     }
 
@@ -48,11 +52,10 @@ class CintaVideo extends Soporte {
      *
      * @return void
      */
-    public function muestraResumen() : void {
-        echo "<strong>Película en VHS: </strong><br>";
-        echo $this->titulo . " (Nº " . $this->getNumero() . ")<br>";
-        echo $this->getPrecio() . " € (IVA no incluido)<br>";
-        echo "Duración: " . $this->duracion . " minutos<br>";
+    public function muestraResumen(): string
+    {
+        $texto = "Película en VHS: $this->titulo ({$this->duracion} min)";
+        echo $texto;
+        return $texto;
     }
 }
-?>
