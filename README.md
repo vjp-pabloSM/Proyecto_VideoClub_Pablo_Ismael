@@ -455,6 +455,61 @@ Puntuación Metacritic: 74
 Se crean las siguientes etiquetas en GitHub:
 - **v0.533**: documentación del proyecto con phpDocumentor y Web Scraping con Metacritic (URL por soporte y obtención de puntuaciones en los alquileres)
 
+## 🧩 Proyecto Videoclub V (Pruebas y ampliaciones)
+
+### 📌 Cobertura de pruebas incremental
+
+El objetivo de los siguientes ejercicios es conseguir de manera incremental una cobertura de pruebas superior al 95%.
+
+- Se crean pruebas dentro de la carpeta `tests` para las clases:
+  - `Soporte`
+  - `CintaVideo`
+  - `Dvd`
+  - `Juego`  
+  Respetando el espacio de nombres.
+
+- Los métodos `muestraResumen`, tras hacer `echo` de los mensajes, deben devolver una cadena con el propio mensaje.
+
+- Se crean pruebas para la clase `Cliente`:
+  - Aprovechando el código existente para comprobar la funcionalidad.
+  - Utilizando proveedores de datos para añadir conjuntos de datos más amplios.
+  - Comprobando distintos cupos, soportes ya alquilados (lanza excepción), IDs de soportes únicos, etc.
+
+- Se crean pruebas para la clase `Videoclub`:
+  - Incluyendo métodos para alquilar y devolver soportes, tanto de manera individual como mediante arrays.
+
+- Se genera el informe de cobertura:
+  - Cobertura >= 90%
+  - Valor CRAP <= 5  
+  En caso de no cumplirse, se crean nuevos casos de prueba y/o se refactoriza el código de la aplicación.
+
+- Cambios versionados en GitHub con la etiqueta **v0.554**.
+
+---
+
+### 📌 Ampliación de funcionalidades
+
+1. **Nueva excepción ClienteNoExisteException**
+   - Cuando un cliente no existe (al alquilar o devolver) se lanza la excepción `ClienteNoExisteException`.
+   - Todas las excepciones se mueven al namespace `Dwes\Videoclub\Exception`.
+   - Se sigue la metodología TDD:
+     - Primero crear pruebas
+     - Luego modificar el código de la aplicación
+   - Se vuelve a generar el informe de cobertura para comprobar la calidad de las pruebas.
+
+2. **Duración en los DVDs**
+   - Se detecta que la clase `Dvd` no almacenaba la duración.
+   - Se realizan los cambios necesarios primero en las pruebas y después en el código.
+
+3. **Introducción de Blu-ray**
+   - Se crea la clase `Bluray` que hereda de `Soporte`.
+   - Se almacenan:
+     - Título
+     - Duración
+     - Formato 4K (`es4k`)
+   - Cambios realizados primero en las pruebas y después en el código.
+
+- Todos los cambios se suben a GitHub con la etiqueta **v0.563**.
 
 ### 👥 Autores
 
