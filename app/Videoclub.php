@@ -131,6 +131,20 @@ class Videoclub {
     }
 
     /**
+     * Crea e incluye un Blu-ray en el videoclub
+     *
+     * @param string $titulo
+     * @param float  $precio
+     * @param int    $duracion
+     * @param bool   $es4k
+     * @return void
+     */
+    public function incluirBluray(string $metacritic, $titulo, $precio, $duracion, $es4k = false) {
+        $bluray = new Bluray($titulo, $this->numProductos + 1, $precio, $metacritic, $duracion, $es4k);
+        $this->incluirProducto($bluray);
+    }
+
+    /**
      * Crea e incluye un juego en el videoclub
      *
      * @param string $titulo
@@ -236,8 +250,11 @@ class Videoclub {
      * Captura las excepciones lanzadas por Cliente y registra logs.
      *
      * @param int $numeroCliente
-     * @param int $numeroSuporte
+     * @param int $numeroSoporte
      * @return Videoclub
+     *
+     * @throws ClienteNoEncontradoException
+     * @throws SoporteNoEncontradoException
      */
     public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): Videoclub {
         $cliente = null;
@@ -278,7 +295,6 @@ class Videoclub {
         return $this;
     }
 
-
     /**
      * Alquila múltiples productos a un socio
      *
@@ -296,6 +312,8 @@ class Videoclub {
      * @param int $numSocio
      * @param int $numeroProducto
      * @return Videoclub
+     *
+     * @throws ClienteNoEncontradoException
      */
     public function devolverSocioProducto(int $numSocio, int $numeroProducto) {
         $cliente = null;

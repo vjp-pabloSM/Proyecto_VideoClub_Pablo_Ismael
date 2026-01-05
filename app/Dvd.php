@@ -29,6 +29,13 @@ class Dvd extends Soporte
     private $formatPantalla;
 
     /**
+     * Duración de la película en minutos
+     *
+     * @var int
+     */
+    private $duracion;
+
+    /**
      * Constructor de la clase Dvd
      *
      * @param string $titulo          Título de la película
@@ -37,12 +44,14 @@ class Dvd extends Soporte
      * @param string $metacritic      URL de Metacritic del soporte
      * @param string $idiomas         Idiomas disponibles
      * @param string $formatPantalla  Formato de pantalla (4:3, 16:9, etc.)
+     * @param int    $duracion        Duración de la película en minutos
      */
-    public function __construct($titulo, $numero, $precio, string $metacritic, $idiomas, $formatPantalla)
+    public function __construct($titulo, $numero, $precio, string $metacritic, $idiomas, $formatPantalla, int $duracion = 0)
     {
         parent::__construct($titulo, $numero, $precio, $metacritic);
         $this->idiomas = $idiomas;
         $this->formatPantalla = $formatPantalla;
+        $this->duracion = $duracion;
     }
 
     /**
@@ -57,13 +66,13 @@ class Dvd extends Soporte
      * Muestra un resumen con la información del DVD
      *
      * Implementa el método definido por la interfaz Resumible.
-     * Muestra el título, número, precio, idiomas y formato de pantalla.
+     * Muestra el título, número, precio, idiomas, formato de pantalla y duración.
      *
-     * @return void
+     * @return string
      */
     public function muestraResumen(): string
     {
-        $texto = "Película en DVD: $this->titulo (Nº {$this->getNumero()}) - {$this->getPrecio()} € - Idiomas: $this->idiomas - Formato: {$this->formatPantalla}";
+        $texto = "Película en DVD: $this->titulo (Nº {$this->getNumero()}) - {$this->getPrecio()} € - Idiomas: $this->idiomas - Formato: {$this->formatPantalla} - Duración: {$this->duracion} min.";
         echo $texto;
         return $texto;
     }
